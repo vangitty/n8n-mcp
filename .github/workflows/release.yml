@@ -148,7 +148,7 @@ jobs:
 
 This is the initial release of n8n-mcp v$CURRENT_VERSION.
 
----
+___
 
 **Release Statistics:**
 - Commit count: $(git rev-list --count HEAD)
@@ -220,11 +220,11 @@ EOF
           # Create release body
           cat > release_body.md << 'EOF'
           # Release v${{ needs.detect-version-change.outputs.new-version }}
-          
+
           ${{ needs.generate-release-notes.outputs.release-notes }}
-          
-          ---
-          
+
+          ___
+
           ## Installation
           
           ### NPM Package
