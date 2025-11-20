@@ -367,7 +367,7 @@ describe('n8n-validation', () => {
         expect(cleaned.name).toBe('Test Workflow');
       });
 
-      it('should add empty settings object for cloud API compatibility', () => {
+      it('should omit settings property when no settings provided (Issue #431)', () => {
         const workflow = {
           name: 'Test Workflow',
           nodes: [],
@@ -375,7 +375,7 @@ describe('n8n-validation', () => {
         } as any;
 
         const cleaned = cleanWorkflowForUpdate(workflow);
-        expect(cleaned.settings).toEqual({});
+        expect(cleaned).not.toHaveProperty('settings');
       });
 
       it('should filter settings to safe properties to prevent API errors (Issue #248 - final fix)', () => {
@@ -467,7 +467,48 @@ describe('n8n-validation', () => {
         } as any;
 
         const cleaned = cleanWorkflowForUpdate(workflow);
-        expect(cleaned.settings).toEqual({});
+        expect(cleaned).not.toHaveProperty('settings');
+      });
+
+      it('should omit settings when only non-whitelisted properties exist (Issue #431)', () => {
+        const workflow = {
+          name: 'Test Workflow',
+          nodes: [],
+          connections: {},
+          settings: {
+            callerPolicy: 'workflowsFromSameOwner' as const, // Filtered out
+            timeSavedPerExecution: 5, // Filtered out (UI-only)
+            someOtherProperty: 'value', // Filtered out
+          },
+        } as any;
+
+        const cleaned = cleanWorkflowForUpdate(workflow);
+        // All properties were filtered out, so settings should not exist
+        // to avoid "must NOT have additional properties" API error
+        expect(cleaned).not.toHaveProperty('settings');
+      });
+
+      it('should preserve whitelisted settings when mixed with non-whitelisted (Issue #431)', () => {
+        const workflow = {
+          name: 'Test Workflow',
+          nodes: [],
+          connections: {},
+          settings: {
+            executionOrder: 'v1' as const, // Whitelisted
+            callerPolicy: 'workflowsFromSameOwner' as const, // Filtered out
+            timezone: 'America/New_York', // Whitelisted
+            someOtherProperty: 'value', // Filtered out
+          },
+        } as any;
+
+        const cleaned = cleanWorkflowForUpdate(workflow);
+        // Should keep only whitelisted properties
+        expect(cleaned.settings).toEqual({
+          executionOrder: 'v1',
+          timezone: 'America/New_York'
+        });
+        expect(cleaned.settings).not.toHaveProperty('callerPolicy');
+        expect(cleaned.settings).not.toHaveProperty('someOtherProperty');
       });
     });
   });
@@ -1346,7 +1387,7 @@ describe('n8n-validation', () => {
       expect(forUpdate).not.toHaveProperty('active');
       expect(forUpdate).not.toHaveProperty('tags');
       expect(forUpdate).not.toHaveProperty('meta');
-      expect(forUpdate.settings).toEqual({}); // Settings replaced with empty object for API compatibility
+      expect(forUpdate).not.toHaveProperty('settings'); // Settings omitted when not present (Issue #431)
       expect(validateWorkflowStructure(forUpdate)).toEqual([]);
     });
   });

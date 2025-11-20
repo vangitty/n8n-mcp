@@ -189,10 +189,18 @@ export function cleanWorkflowForUpdate(workflow: Workflow): Partial<Workflow> {
         filteredSettings[key] = (cleanedWorkflow.settings as any)[key];
       }
     }
-    cleanedWorkflow.settings = filteredSettings;
+
+    // Only include settings if it has properties after filtering
+    // n8n API rejects empty settings objects
+    if (Object.keys(filteredSettings).length > 0) {
+      cleanedWorkflow.settings = filteredSettings;
+    } else {
+      delete cleanedWorkflow.settings;
+    }
   } else {
-    // No settings provided - use empty object for safety
-    cleanedWorkflow.settings = {};
+    // No settings provided - remove the property entirely
+    // n8n API rejects empty settings objects
+    delete cleanedWorkflow.settings;
   }
 
   return cleanedWorkflow;
