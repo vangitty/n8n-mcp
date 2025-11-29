@@ -1,39 +1,8 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764407709892,
+  "lastUpdate": 1764429114757,
   "repoUrl": "https://github.com/czlonkowski/n8n-mcp",
   "entries": {
     "n8n-mcp Benchmarks": [
-      {
-        "commit": {
-          "author": {
-            "email": "56956555+czlonkowski@users.noreply.github.com",
-            "name": "Romuald Członkowski",
-            "username": "czlonkowski"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "0d2d9bdd523208b44c154264a693fc1a026722cc",
-          "message": "fix: Critical memory leak in sql.js adapter (fixes #330) (#335)\n\n* fix: Critical memory leak in sql.js adapter (fixes #330)\n\nResolves critical memory leak causing growth from 100Mi to 2.2GB over 72 hours in Docker/Kubernetes deployments.\n\nProblem Analysis:\n- Environment: Kubernetes/Docker using sql.js fallback\n- Growth rate: ~23 MB/hour (444Mi after 19 hours)\n- Pattern: Linear accumulation, garbage collection couldn't keep pace\n- Impact: OOM kills every 24-48 hours in memory-limited pods\n\nRoot Causes:\n1. Over-aggressive save triggering: prepare() called scheduleSave() on reads\n2. Too frequent saves: 100ms debounce = 3-5 saves/second under load\n3. Double allocation: Buffer.from() copied Uint8Array (4-10MB per save)\n4. No cleanup: Relied solely on GC which couldn't keep pace\n5. Docker limitation: Missing build tools forced sql.js instead of better-sqlite3\n\nCode-Level Fixes (sql.js optimization):\n✅ Removed scheduleSave() from prepare() (read operations don't modify DB)\n✅ Increased debounce: 100ms → 5000ms (98% reduction in save frequency)\n✅ Removed Buffer.from() copy (50% reduction in temporary allocations)\n✅ Made save interval configurable via SQLJS_SAVE_INTERVAL_MS env var\n✅ Added input validation (minimum 100ms, falls back to 5000ms default)\n\nInfrastructure Fix (Dockerfile):\n✅ Added build tools (python3, make, g++) to main Dockerfile\n✅ Compile better-sqlite3 during npm install, then remove build tools\n✅ Image size increase: ~5-10MB (acceptable for eliminating memory leak)\n✅ Railway Dockerfile already had build tools (added explanatory comment)\n\nImpact:\nWith better-sqlite3 (now default in Docker):\n- Memory: Stable at ~100-120 MB (native SQLite)\n- Performance: Better than sql.js (no WASM overhead)\n- No periodic saves needed (writes directly to disk)\n- Eliminates memory leak entirely\n\nWith sql.js (fallback only):\n- Memory: Stable at 150-200 MB (vs 2.2GB after 3 days)\n- No OOM kills in long-running Kubernetes pods\n- Reduced CPU usage (98% fewer disk writes)\n- Same data safety (5-second save window acceptable)\n\nConfiguration:\n- New env var: SQLJS_SAVE_INTERVAL_MS (default: 5000)\n- Only relevant when sql.js fallback is used\n- Minimum: 100ms, invalid values fall back to default\n\nTesting:\n✅ All unit tests passing\n✅ New integration tests for memory leak prevention\n✅ TypeScript compilation successful\n✅ Docker builds verified (build tools working)\n\nFiles Modified:\n- src/database/database-adapter.ts: SQLJSAdapter optimization\n- Dockerfile: Added build tools for better-sqlite3\n- Dockerfile.railway: Added documentation comment\n- tests/unit/database/database-adapter-unit.test.ts: New test suites\n- tests/integration/database/sqljs-memory-leak.test.ts: Integration tests\n- package.json: Version bump to 2.20.2\n- package.runtime.json: Version bump to 2.20.2\n- CHANGELOG.md: Comprehensive v2.20.2 entry\n- README.md: Database & Memory Configuration section\n\nCloses #330\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n* fix: Address code review findings for memory leak fix (#330)\n\n## Code Review Fixes\n\n1. **Test Assertion Error (line 292)** - CRITICAL\n   - Fixed incorrect assertion in sqljs-memory-leak test\n   - Changed from `expect(saveCallback).toBeLessThan(10)`\n   - To: `expect(saveCallback.mock.calls.length).toBeLessThan(10)`\n   - ✅ Test now passes (12/12 tests passing)\n\n2. **Upper Bound Validation**\n   - Added maximum value validation for SQLJS_SAVE_INTERVAL_MS\n   - Valid range: 100ms - 60000ms (1 minute)\n   - Falls back to default 5000ms if out of range\n   - Location: database-adapter.ts:255\n\n3. **Railway Dockerfile Optimization**\n   - Removed build tools after installing dependencies\n   - Reduces image size by ~50-100MB\n   - Pattern: install → build native modules → remove tools\n   - Location: Dockerfile.railway:38-41\n\n4. **Defensive Programming**\n   - Added `closed` flag to prevent double-close issues\n   - Early return if already closed\n   - Location: database-adapter.ts:236, 283-286\n\n5. **Documentation Improvements**\n   - Added comprehensive comments for DEFAULT_SAVE_INTERVAL_MS\n   - Documented data loss window trade-off (5 seconds)\n   - Explained constructor optimization (no initial save)\n   - Clarified scheduleSave() debouncing under load\n\n6. **CHANGELOG Accuracy**\n   - Fixed discrepancy about explicit cleanup\n   - Updated to reflect automatic cleanup via function scope\n   - Removed misleading `data = null` reference\n\n## Verification\n\n- ✅ Build: Success\n- ✅ Lint: No errors\n- ✅ Critical test: sqljs-memory-leak (12/12 passing)\n- ✅ All code review findings addressed\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude <noreply@anthropic.com>",
-          "timestamp": "2025-10-18T22:11:27+02:00",
-          "tree_id": "f8c03f5cd1a539bfaf9575a9caba3424599d1c0b",
-          "url": "https://github.com/czlonkowski/n8n-mcp/commit/0d2d9bdd523208b44c154264a693fc1a026722cc"
-        },
-        "date": 1760818398133,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "sample - array sorting - small",
-            "value": 0.0136,
-            "range": "0.3096",
-            "unit": "ms",
-            "extra": "73341 ops/sec"
-          }
-        ]
-      },
       {
         "commit": {
           "author": {
@@ -1542,6 +1511,37 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/czlonkowski/n8n-mcp/commit/7d9b45688718cdb186c2018d85f0acd19fb48148"
         },
         "date": 1764407709248,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "sample - array sorting - small",
+            "value": 0.0136,
+            "range": "0.3096",
+            "unit": "ms",
+            "extra": "73341 ops/sec"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "56956555+czlonkowski@users.noreply.github.com",
+            "name": "Romuald Członkowski",
+            "username": "czlonkowski"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ddf95567591a5b0a56e9df393e368969536fce3e",
+          "message": "feat: n8n_deploy_template deploy-first with auto-fix (v2.27.2) (#457)\n\n* feat: n8n_deploy_template deploy-first with auto-fix (v2.27.2)\n\nImproved template deployment to deploy first, then automatically fix common\nissues. This dramatically improves deployment success rates for templates\nwith expression format issues.\n\nKey Changes:\n- Deploy-first behavior: templates deployed before validation\n- Auto-fix runs automatically after deployment (configurable via `autoFix`)\n- Returns `fixesApplied` array showing all corrections made\n- Fixed expression validator \"nested expressions\" false positive\n- Fixed Zod schema missing `typeversion-upgrade` and `version-migration` fix types\n\nTesting: 87% deployment success rate across 15 diverse templates\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n* fix: address code review findings for deploy template\n\nCode review fixes:\n- CRITICAL: Update test schema to use `autoFix` instead of old `validate` parameter\n- WARNING: Add `AppliedFix` and `AutofixResultData` interfaces for type safety\n- WARNING: Add `autoFixStatus` field to response (success/failed/skipped)\n- WARNING: Report auto-fix failure in response message\n\nChanges:\n- tests/unit/mcp/handlers-deploy-template.test.ts: Fixed schema and test cases\n- src/mcp/handlers-n8n-manager.ts: Added type definitions, autoFixStatus tracking\n- src/mcp/tool-docs/workflow_management/n8n-deploy-template.ts: Updated docs\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+          "timestamp": "2025-11-29T16:10:14+01:00",
+          "tree_id": "56b1723f2108688a5528e4ad0ca621e73aa41495",
+          "url": "https://github.com/czlonkowski/n8n-mcp/commit/ddf95567591a5b0a56e9df393e368969536fce3e"
+        },
+        "date": 1764429114513,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
