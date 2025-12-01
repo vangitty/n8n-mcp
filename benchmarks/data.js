@@ -1,39 +1,8 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764611765468,
+  "lastUpdate": 1764624921501,
   "repoUrl": "https://github.com/czlonkowski/n8n-mcp",
   "entries": {
     "n8n-mcp Benchmarks": [
-      {
-        "commit": {
-          "author": {
-            "email": "56956555+czlonkowski@users.noreply.github.com",
-            "name": "Romuald Członkowski",
-            "username": "czlonkowski"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "32264da107ff6a315e5bcc9d854852732af9e1b0",
-          "message": "enhance: Add safety features to HTTP validation tools response (#345)\n\n* enhance: Add safety features to HTTP validation tools response\n\n- Add TypeScript interface (MCPToolResponse) for type safety\n- Implement 1MB response size validation and truncation\n- Add warning logs for large validation responses\n- Prevent memory issues with size limits (matches STDIO behavior)\n\nThis enhances PR #343's fix with defensive measures:\n- Size validation prevents DoS/memory exhaustion\n- Truncation ensures HTTP transport stability\n- Type safety improves code maintainability\n\nAll changes are backward compatible and non-breaking.\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n* chore: Version bump to 2.20.4 with documentation\n\n- Bump version 2.20.3 → 2.20.4\n- Add comprehensive CHANGELOG.md entry for v2.20.4\n- Document CI test infrastructure issues in docs/CI_TEST_INFRASTRUCTURE.md\n- Explain MSW/external PR integration test failures\n- Reference PR #343 and enhancement safety features\n\nCode review: 9/10 (code-reviewer agent approved)\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en",
-          "timestamp": "2025-10-21T20:25:48+02:00",
-          "tree_id": "d2b74c88b6cffc9331541959b676f779956ab10d",
-          "url": "https://github.com/czlonkowski/n8n-mcp/commit/32264da107ff6a315e5bcc9d854852732af9e1b0"
-        },
-        "date": 1761071274303,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "sample - array sorting - small",
-            "value": 0.0136,
-            "range": "0.3096",
-            "unit": "ms",
-            "extra": "73341 ops/sec"
-          }
-        ]
-      },
       {
         "commit": {
           "author": {
@@ -1542,6 +1511,37 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/czlonkowski/n8n-mcp/commit/3188d209b78ad8267fb0afb70bf3050174116230"
         },
         "date": 1764611764753,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "sample - array sorting - small",
+            "value": 0.0136,
+            "range": "0.3096",
+            "unit": "ms",
+            "extra": "73341 ops/sec"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "56956555+czlonkowski@users.noreply.github.com",
+            "name": "Romuald Członkowski",
+            "username": "czlonkowski"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ef9b6f634145fcb9434894c78ae7e082b9a88581",
+          "message": "fix: n8n_test_workflow webhookId resolution and form handling (v2.28.2) (#462)",
+          "timestamp": "2025-12-01T22:33:25+01:00",
+          "tree_id": "026244aca6861837436dd0bfadb89a84776aa77e",
+          "url": "https://github.com/czlonkowski/n8n-mcp/commit/ef9b6f634145fcb9434894c78ae7e082b9a88581"
+        },
+        "date": 1764624920817,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
