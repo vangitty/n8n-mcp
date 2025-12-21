@@ -1,39 +1,8 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1766322833421,
+  "lastUpdate": 1766327719014,
   "repoUrl": "https://github.com/czlonkowski/n8n-mcp",
   "entries": {
     "n8n-mcp Benchmarks": [
-      {
-        "commit": {
-          "author": {
-            "email": "56956555+czlonkowski@users.noreply.github.com",
-            "name": "Romuald Członkowski",
-            "username": "czlonkowski"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "ee7229b4dbef765f5dce6516787eb137fec4c8a2",
-          "message": "Merge pull request #372 from czlonkowski/fix/sync-package-runtime-version-2.22.3\n\nfix: resolve release workflow YAML parsing errors with script-based approach",
-          "timestamp": "2025-10-25T21:23:10+02:00",
-          "tree_id": "687db9045c0a0b78aba6c5468f67545d094020ab",
-          "url": "https://github.com/czlonkowski/n8n-mcp/commit/ee7229b4dbef765f5dce6516787eb137fec4c8a2"
-        },
-        "date": 1761420304574,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "sample - array sorting - small",
-            "value": 0.0136,
-            "range": "0.3096",
-            "unit": "ms",
-            "extra": "73341 ops/sec"
-          }
-        ]
-      },
       {
         "commit": {
           "author": {
@@ -1532,6 +1501,35 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/czlonkowski/n8n-mcp/commit/fa216e4d1375dfec7e2de424ee0c05a3869db65c"
         },
         "date": 1766322833175,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "sample - array sorting - small",
+            "value": 0.0136,
+            "range": "0.3096",
+            "unit": "ms",
+            "extra": "73341 ops/sec"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "romualdczlonkowski@MacBook-Pro-Romuald.local",
+            "name": "Romuald Członkowski"
+          },
+          "committer": {
+            "email": "romualdczlonkowski@MacBook-Pro-Romuald.local",
+            "name": "Romuald Członkowski"
+          },
+          "distinct": true,
+          "id": "a40f6a5077001fbfbdc7529663a4ebcba608f5e6",
+          "message": "test: make templates database validation critical instead of optional\n\nPreviously, the CI test only warned when templates were missing but\nalways passed. This allowed the templates database to be lost without\nfailing CI. Now the test will fail if templates are empty or below\nthe expected count of 2500.\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>",
+          "timestamp": "2025-12-21T15:33:25+01:00",
+          "tree_id": "8c445e411ac900ad406f2a5d351e94109f9201ff",
+          "url": "https://github.com/czlonkowski/n8n-mcp/commit/a40f6a5077001fbfbdc7529663a4ebcba608f5e6"
+        },
+        "date": 1766327718567,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
