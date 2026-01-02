@@ -1,39 +1,8 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1766757175046,
+  "lastUpdate": 1767347160242,
   "repoUrl": "https://github.com/czlonkowski/n8n-mcp",
   "entries": {
     "n8n-mcp Benchmarks": [
-      {
-        "commit": {
-          "author": {
-            "email": "56956555+czlonkowski@users.noreply.github.com",
-            "name": "Romuald Członkowski",
-            "username": "czlonkowski"
-          },
-          "committer": {
-            "email": "noreply@github.com",
-            "name": "GitHub",
-            "username": "web-flow"
-          },
-          "distinct": true,
-          "id": "65f51ad8b5f3f95fa752ea0eb597c903eb99e27f",
-          "message": "chore: bump version to 2.22.9 (#395)\n\n* chore: bump version to 2.22.9\n\nUpdated version number to trigger release workflow after n8n 1.118.1 update.\nPrevious version 2.22.8 was already released on 2025-10-28, so the release\nworkflow did not trigger when PR #393 was merged.\n\nChanges:\n- Bump package.json version from 2.22.8 to 2.22.9\n- Update CHANGELOG.md with correct version and date\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n* docs: update n8n update workflow with lessons learned\n\nAdded new fast workflow section based on 2025-11-04 update experience:\n- CRITICAL: Check existing releases first to avoid version conflicts\n- Skip local tests - CI runs them anyway (saves 2-3 min)\n- Integration test failures with 'unauthorized' are infrastructure issues\n- Release workflow only triggers on version CHANGE\n- Updated time estimates for fast vs full workflow\n\nThis will make future n8n updates smoother and faster.\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n* fix: exclude versionCounter from workflow updates for n8n 1.118.1\n\nn8n 1.118.1 returns versionCounter in GET /workflows/{id} responses but\nrejects it in PUT /workflows/{id} updates with the error:\n'request/body must NOT have additional properties'\n\nThis was causing all integration tests to fail in CI with n8n 1.118.1.\n\nChanges:\n- Added versionCounter to excluded properties in cleanWorkflowForUpdate()\n- Tested and verified fix works with n8n 1.118.1 test instance\n\nFixes CI failures in PR #395\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\n\n* chore: improve versionCounter fix with types and tests\n\n- Add versionCounter type definition to Workflow and WorkflowExport interfaces\n- Add comprehensive test coverage for versionCounter exclusion\n- Update CHANGELOG with detailed bug fix documentation\n\nAddresses code review feedback from PR #395\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n---------\n\nCo-authored-by: Claude <noreply@anthropic.com>",
-          "timestamp": "2025-11-04T11:33:54+01:00",
-          "tree_id": "b970df13ad4ec3c77e756ff21b994b94a8af6b1d",
-          "url": "https://github.com/czlonkowski/n8n-mcp/commit/65f51ad8b5f3f95fa752ea0eb597c903eb99e27f"
-        },
-        "date": 1762252526334,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "sample - array sorting - small",
-            "value": 0.0136,
-            "range": "0.3096",
-            "unit": "ms",
-            "extra": "73341 ops/sec"
-          }
-        ]
-      },
       {
         "commit": {
           "author": {
@@ -1530,6 +1499,37 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/czlonkowski/n8n-mcp/commit/808088f25eccf3cf73a90017af9f5abdd1893886"
         },
         "date": 1766757174358,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "sample - array sorting - small",
+            "value": 0.0136,
+            "range": "0.3096",
+            "unit": "ms",
+            "extra": "73341 ops/sec"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "56956555+czlonkowski@users.noreply.github.com",
+            "name": "Romuald Członkowski",
+            "username": "czlonkowski"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f10772a9d28f67fca6e14ccf7477af9d99651830",
+          "message": "fix: preserve workflow data during serialization (Issue #517) (#519)\n\nFixed a critical bug where workflow mutation data was corrupted during\nserialization to Supabase. The recursive toSnakeCase() function was\nconverting nested workflow data, mangling:\n- Connection keys (node names like \"Webhook\" → \"_webhook\")\n- Node field names (typeVersion → type_version)\n\nSolution: Replace recursive conversion with selective mutationToSupabaseFormat()\nthat only converts top-level field names to snake_case while preserving\nnested workflow data exactly as-is.\n\nImpact:\n- 98.9% of workflow mutations had corrupted data\n- Deployability rate improved from ~21% to ~68%\n\nChanges:\n- src/telemetry/batch-processor.ts: New selective converter\n- tests/unit/telemetry/batch-processor.test.ts: 3 new regression tests\n\nConceived by Romuald Członkowski - https://www.aiadvisors.pl/en\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Romuald Członkowski <romualdczlonkowski@MacBook-Pro-Romuald.local>\nCo-authored-by: Claude Opus 4.5 <noreply@anthropic.com>",
+          "timestamp": "2026-01-02T10:44:13+01:00",
+          "tree_id": "b2f3780bf0bc44b0edbd7e423710a1f87f21b11b",
+          "url": "https://github.com/czlonkowski/n8n-mcp/commit/f10772a9d28f67fca6e14ccf7477af9d99651830"
+        },
+        "date": 1767347159970,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
