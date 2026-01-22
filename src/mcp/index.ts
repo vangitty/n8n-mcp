@@ -143,20 +143,37 @@ Learn more: https://github.com/czlonkowski/n8n-mcp/blob/main/PRIVACY.md
         // Use the deprecated fixed HTTP implementation
         const { startFixedHTTPServer } = await import('../http-server');
         await startFixedHTTPServer();
-      } else {
-        // HTTP mode - for remote deployment with single-session architecture
-        const { SingleSessionHTTPServer } = await import('../http-server-single-session');
-        const server = new SingleSessionHTTPServer();
-        
+      } else if (process.env.USE_STATELESS_HTTP === 'true') {
+        // Stateless HTTP mode - no sessions, no expiration
+        // Best for deployments that experience session timeout issues
+        logger.info('Starting in STATELESS HTTP mode (no sessions)');
+        const { StatelessHTTPServer } = await import('../http-server-stateless');
+        const server = new StatelessHTTPServer();
+
         // Graceful shutdown handlers
         const shutdown = async () => {
           await server.shutdown();
           process.exit(0);
         };
-        
+
         process.on('SIGTERM', shutdown);
         process.on('SIGINT', shutdown);
-        
+
+        await server.start();
+      } else {
+        // HTTP mode - for remote deployment with single-session architecture
+        const { SingleSessionHTTPServer } = await import('../http-server-single-session');
+        const server = new SingleSessionHTTPServer();
+
+        // Graceful shutdown handlers
+        const shutdown = async () => {
+          await server.shutdown();
+          process.exit(0);
+        };
+
+        process.on('SIGTERM', shutdown);
+        process.on('SIGINT', shutdown);
+
         await server.start();
       }
     } else {
