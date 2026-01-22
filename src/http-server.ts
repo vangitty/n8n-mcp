@@ -297,16 +297,32 @@ export async function startFixedHTTPServer() {
     const startTime = Date.now();
     
     // Enhanced authentication check with specific logging
+    // Support both Authorization header and URL query parameter for streamable-http clients
     const authHeader = req.headers.authorization;
-    
-    // Check if Authorization header is missing
-    if (!authHeader) {
-      logger.warn('Authentication failed: Missing Authorization header', { 
+    const queryToken = req.query.token as string | undefined;
+
+    let token: string | null = null;
+
+    // Try Authorization header first
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7).trim();
+    }
+    // Fall back to URL query parameter (for streamable-http clients like Claude Code)
+    else if (queryToken) {
+      token = queryToken.trim();
+      logger.debug('Using token from URL query parameter');
+    }
+
+    // Check if no token was found
+    if (!token) {
+      logger.warn('Authentication failed: No token provided', {
         ip: req.ip,
         userAgent: req.get('user-agent'),
-        reason: 'no_auth_header'
+        reason: 'no_token',
+        hasAuthHeader: !!authHeader,
+        hasQueryToken: !!queryToken
       });
-      res.status(401).json({ 
+      res.status(401).json({
         jsonrpc: '2.0',
         error: {
           code: -32001,
@@ -316,28 +332,6 @@ export async function startFixedHTTPServer() {
       });
       return;
     }
-    
-    // Check if Authorization header has Bearer prefix
-    if (!authHeader.startsWith('Bearer ')) {
-      logger.warn('Authentication failed: Invalid Authorization header format (expected Bearer token)', { 
-        ip: req.ip,
-        userAgent: req.get('user-agent'),
-        reason: 'invalid_auth_format',
-        headerPrefix: authHeader.substring(0, Math.min(authHeader.length, 10)) + '...'  // Log first 10 chars for debugging
-      });
-      res.status(401).json({ 
-        jsonrpc: '2.0',
-        error: {
-          code: -32001,
-          message: 'Unauthorized'
-        },
-        id: null
-      });
-      return;
-    }
-    
-    // Extract token and trim whitespace
-    const token = authHeader.slice(7).trim();
 
     // SECURITY: Use timing-safe comparison to prevent timing attacks
     // See: https://github.com/czlonkowski/n8n-mcp/issues/265 (CRITICAL-02)
